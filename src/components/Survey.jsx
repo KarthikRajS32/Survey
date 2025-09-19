@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export default function Survey() {
   const initialFormData = {
-    constitution: '',
+    constituency: '',
     area: '',
     boothNumber: '',
     satisfaction: '',
@@ -21,6 +21,55 @@ export default function Survey() {
 
   const [formData, setFormData] = useState(initialFormData)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [availableAreas, setAvailableAreas] = useState([])
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  const constituencyData = {
+    'Ariyalur': ['Ariyalur', 'Andimadam', 'Sendurai', 'Udayarpalayam'],
+    'Arakkonam': ['Arakkonam', 'Sholinghur', 'Ranipet', 'Walajapet'],
+    'Arani': ['Arani', 'Cheyyar', 'Vandavasi', 'Polur'],
+    'Attur': ['Attur', 'Yercaud', 'Gangavalli', 'Pethanayakanpalayam'],
+    'Chengalpattu': ['Chengalpattu', 'Thiruporur', 'Madurantakam', 'Uthiramerur'],
+    'Chennai Central': ['Chepauk', 'Triplicane', 'Mylapore', 'Thousand Lights'],
+    'Chennai North': ['Royapuram', 'Kolathur', 'Villivakkam', 'Egmore'],
+    'Chennai South': ['Velachery', 'Sholinganallur', 'Tambaram', 'Pallavaram'],
+    'Chidambaram': ['Chidambaram', 'Kattumannarkoil', 'Vriddachalam', 'Panruti'],
+    'Coimbatore': ['RS Puram', 'Gandhipuram', 'Peelamedu', 'Saravanampatti'],
+    'Cuddalore': ['Cuddalore', 'Kurinjipadi', 'Bhuvanagiri', 'Chidambaram'],
+    'Dharmapuri': ['Dharmapuri', 'Palacode', 'Pennagaram', 'Harur'],
+    'Dindigul': ['Dindigul', 'Natham', 'Nilakottai', 'Athoor'],
+    'Erode': ['Erode East', 'Erode West', 'Modakurichi', 'Kodumudi'],
+    'Kallakurichi': ['Kallakurichi', 'Sankarapuram', 'Tirukoilur', 'Ulundurpet'],
+    'Kancheepuram': ['Kancheepuram', 'Sriperumbudur', 'Kundrathur', 'St. Thomas Mount'],
+    'Kanniyakumari': ['Nagercoil', 'Colachel', 'Padmanabhapuram', 'Vilavancode'],
+    'Karur': ['Karur', 'Krishnarayapuram', 'Manapparai', 'Kulithalai'],
+    'Krishnagiri': ['Krishnagiri', 'Hosur', 'Uthangarai', 'Bargur'],
+    'Madurai': ['Anna Nagar', 'Thiruparankundram', 'Sholavandan', 'Madurai East'],
+    'Mayiladuthurai': ['Mayiladuthurai', 'Tharangambadi', 'Thiruthuraipoondi', 'Vedaranyam'],
+    'Nagapattinam': ['Nagapattinam', 'Kilvelur', 'Thirukkuvalai', 'Vedaranyam'],
+    'Namakkal': ['Namakkal', 'Rasipuram', 'Senthamangalam', 'Komarapalayam'],
+    'Nilgiris': ['Udhagamandalam', 'Coonoor', 'Kotagiri', 'Gudalur'],
+    'Perambalur': ['Perambalur', 'Kunnam', 'Alathur', 'Veppanthattai'],
+    'Pollachi': ['Pollachi', 'Valparai', 'Udumalaipettai', 'Kinathukadavu'],
+    'Pudukkottai': ['Pudukkottai', 'Thirumayam', 'Alangudi', 'Aranthangi'],
+    'Ramanathapuram': ['Ramanathapuram', 'Mudukulathur', 'Paramakudi', 'Rameswaram'],
+    'Ranipet': ['Ranipet', 'Arcot', 'Sholinghur', 'Nemili'],
+    'Salem': ['Salem West', 'Salem North', 'Salem South', 'Attur'],
+    'Sivaganga': ['Sivaganga', 'Karaikudi', 'Devakottai', 'Manamadurai'],
+    'Thanjavur': ['Thanjavur', 'Orathanadu', 'Thiruvonam', 'Budalur'],
+    'Theni': ['Theni', 'Bodinayakanur', 'Periyakulam', 'Uthamapalayam'],
+    'Thoothukudi': ['Thoothukudi', 'Vilathikulam', 'Ottapidaram', 'Kovilpatti'],
+    'Tiruchirappalli': ['Srirangam', 'Tiruchirappalli West', 'Tiruchirappalli East', 'Lalgudi'],
+    'Tirunelveli': ['Tirunelveli', 'Palayamkottai', 'Ambasamudram', 'Tenkasi'],
+    'Tiruppur': ['Tiruppur North', 'Tiruppur South', 'Palladam', 'Udumalaipettai'],
+    'Tiruvallur': ['Tiruvallur', 'Ponneri', 'Gummidipoondi', 'Poonamallee'],
+    'Tiruvannamalai': ['Tiruvannamalai', 'Kilpennathur', 'Kalasapakkam', 'Polur'],
+    'Tiruvarur': ['Tiruvarur', 'Nannilam', 'Thiruthuraipoondi', 'Mannargudi'],
+    'Vellore': ['Vellore', 'Anaicut', 'Gudiyatham', 'Vaniyambadi'],
+    'Viluppuram': ['Viluppuram', 'Tindivanam', 'Vanur', 'Gingee'],
+    'Virudhunagar': ['Virudhunagar', 'Sivakasi', 'Sattur', 'Aruppukkottai']
+  }
 
   useEffect(() => {
     const submitted = localStorage.getItem('surveySubmitted')
@@ -29,14 +78,25 @@ export default function Survey() {
     }
   }, [])
 
+  useEffect(() => {
+    if (formData.constituency) {
+      setAvailableAreas(constituencyData[formData.constituency] || [])
+      if (formData.area && !constituencyData[formData.constituency]?.includes(formData.area)) {
+        setFormData(prev => ({ ...prev, area: '' }))
+      }
+    } else {
+      setAvailableAreas([])
+    }
+  }, [formData.constituency])
+
   const handleInputChange = (name, value) => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   const questions = [
-    { id: 'constitution', label: 'Constitution', type: 'input', required: true },
-    { id: 'area', label: 'Area', type: 'input', required: true },
-    { id: 'boothNumber', label: 'Booth Number', type: 'input', required: true },
+    { id: 'constituency', label: 'Constituency', type: 'constituency-select', required: true },
+    { id: 'area', label: 'Area', type: 'area-select', required: true },
+    { id: 'boothNumber', label: 'Booth Number', type: 'input', required: false, placeholder: 'Enter booth number (optional)' },
     { id: 'satisfaction', label: 'How satisfied are you with our services?', type: 'radio', required: true, options: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very Dissatisfied'] },
     { id: 'frequency', label: 'How often do you use our services?', type: 'select', required: true, options: ['daily', 'weekly', 'monthly', 'rarely', 'first-time'], optionLabels: ['Daily', 'Weekly', 'Monthly', 'Rarely', 'First Time'] },
     { id: 'recommendation', label: 'Would you recommend us to others?', type: 'radio', required: true, options: ['Yes', 'No', 'Maybe'] },
@@ -84,7 +144,9 @@ export default function Survey() {
     const missingFields = requiredFields.filter(field => !formData[field])
     
     if (missingFields.length > 0) {
-      alert('Please fill in all required fields')
+      setToastMessage('Please fill in all required fields!')
+      setShowToast(true)
+      setTimeout(() => setShowToast(false), 3000)
       return
     }
     
@@ -112,13 +174,58 @@ export default function Survey() {
     const questionNumber = index + 1
     const labelText = `${questionNumber}. ${label}${required ? ' *' : ''}`
 
+    if (type === 'constituency-select') {
+      return (
+        <div key={id} className="space-y-2">
+          <Label htmlFor={id} className="text-base font-medium">{labelText}</Label>
+          <Select value={formData[id]} onValueChange={(value) => handleInputChange(id, value)} required={required}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select constituency" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.keys(constituencyData).map((constituency) => (
+                <SelectItem key={constituency} value={constituency}>
+                  {constituency}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )
+    }
+
+    if (type === 'area-select') {
+      return (
+        <div key={id} className="space-y-2">
+          <Label htmlFor={id} className="text-base font-medium">{labelText}</Label>
+          <Select 
+            value={formData[id]} 
+            onValueChange={(value) => handleInputChange(id, value)} 
+            required={required}
+            disabled={!formData.constituency}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={formData.constituency ? "Select area" : "Select constituency first"} />
+            </SelectTrigger>
+            <SelectContent>
+              {availableAreas.map((area) => (
+                <SelectItem key={area} value={area}>
+                  {area}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )
+    }
+
     if (type === 'input' || type === 'tel') {
       return (
         <div key={id} className="space-y-2">
           <Label htmlFor={id} className="text-base font-medium">{labelText}</Label>
           <Input
             id={id}
-            type={type}
+            type={type === 'tel' ? 'tel' : 'text'}
             value={formData[id]}
             onChange={(e) => handleInputChange(id, e.target.value)}
             placeholder={placeholder}
@@ -173,6 +280,19 @@ export default function Survey() {
     }
   }
 
+  const Toast = ({ message, show }) => {
+    if (!show) return null
+    
+    return (
+      <div className="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 animate-in slide-in-from-top-2">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        </svg>
+        <span>{message}</span>
+      </div>
+    )
+  }
+
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 flex items-center justify-center">
@@ -201,10 +321,11 @@ export default function Survey() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <Toast message={toastMessage} show={showToast} />
       <div className="max-w-2xl mx-auto">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold">V-Survey</CardTitle>
+            <CardTitle className="text-3xl font-bold">Survey</CardTitle>
             <CardDescription className="text-lg">
               Help us improve our services by sharing your valuable feedback
             </CardDescription>
