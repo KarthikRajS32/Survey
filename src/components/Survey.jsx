@@ -41,40 +41,49 @@ export default function Survey() {
     'Tiruppur', 'Tiruvallur', 'Tiruvannamalai', 'Vellore'
   ]
 
-  const assemblyConstituencies = [
-    'Alangulam', 'Alandur', 'Alanganallur', 'Alathur', 'Ambur', 'Anavatti', 'Andipatti', 'Anna Nagar',
-    'Annur', 'Arakkonam', 'Arani', 'Aranthangi', 'Arcot', 'Ariyalur', 'Aruppukkottai', 'Attur',
-    'Avadi', 'Bargur', 'Bhavani', 'Bodinayakanur', 'Bhuvanagiri', 'Chepauk-Thiruvallikeni', 'Cheranmahadevi',
-    'Chennai Central', 'Chennai North', 'Chennai South', 'Chengalpattu', 'Cheyyar', 'Chidambaram',
-    'Chinnasalem', 'Colachel', 'Coimbatore North', 'Coimbatore South', 'Cuddalore', 'Cumbum',
-    'Dharmapuri', 'Dharapuram', 'Dindigul', 'Dr. Radhakrishnan Nagar', 'Edappadi', 'Egmore',
-    'Erode East', 'Erode West', 'Gangavalli', 'Gingee', 'Gobichettipalayam', 'Gudiyatham',
-    'Gummidipoondi', 'Harbour', 'Harur', 'Hosur', 'Jayankondam', 'Jolarpet', 'Kadayanallur',
-    'Kallakurichi', 'Kalasapakkam', 'Kancheepuram', 'Kangeyam', 'Kanniyakumari', 'Karaikudi',
-    'Karur', 'Katpadi', 'Kattumannarkoil', 'Kavundampalayam', 'Kilpennathur', 'Kilvelur',
-    'Kinathukadavu', 'Kovilpatti', 'Krishnagiri', 'Krishnarayapuram', 'Kulithalai', 'Kumbakonam',
-    'Kunnam', 'Kurinjipadi', 'Lalgudi', 'Madathukulam', 'Madurai Central', 'Madurai East',
-    'Madurai North', 'Madurai South', 'Madurai West', 'Manamadurai', 'Manapparai', 'Mannargudi',
-    'Mayiladuthurai', 'Melur', 'Mettur', 'Modakurichi', 'Mudukulathur', 'Musiri', 'Mylapore',
-    'Nagapattinam', 'Nagercoil', 'Namakkal', 'Nanguneri', 'Nannilam', 'Natham', 'Neyveli',
-    'Nilakottai', 'Oddanchatram', 'Omalur', 'Orathanadu', 'Ottapidaram', 'Padmanabhapuram',
-    'Palacode', 'Palacurichi', 'Palani', 'Palayamkottai', 'Pallathur', 'Palladam', 'Papanasam',
-    'Paramakudi', 'Pennagaram', 'Perambalur', 'Perambur', 'Peranamallur', 'Periyakulam',
-    'Perundurai', 'Pollachi', 'Polur', 'Ponneri', 'Poonamallee', 'Pudukkottai', 'Purasawalkam',
-    'Radhapuram', 'Rajapalayam', 'Ramanathapuram', 'Ranipet', 'Rasipuram', 'Royapuram',
-    'Saidapet', 'Salem North', 'Salem South', 'Salem West', 'Sankarankoil', 'Sankarapuram',
-    'Sathankulam', 'Sattur', 'Sengottai', 'Senthamangalam', 'Sholavandan', 'Sholinganallur',
-    'Sholinghur', 'Sirkali', 'Sivaganga', 'Sivakasi', 'Sriperumbudur', 'Srirangam', 'Srivaikuntam',
-    'Sulur', 'Tambaram', 'Tenkasi', 'Thanjavur', 'Theni', 'Thirumangalam', 'Thirupparankundram',
-    'Thiruthuraipoondi', 'Thiruvarur', 'Thiruvidaimarudur', 'Thiruvonam', 'Thoothukudi',
-    'Thousand Lights', 'Tindivanam', 'Tiruchendur', 'Tiruchirappalli East', 'Tiruchirappalli West',
-    'Tirukoilur', 'Tirunelveli', 'Tirupathur', 'Tiruppur North', 'Tiruppur South', 'Tiruttani',
-    'Tiruvallur', 'Tiruvannamalai', 'Tiruverumbur', 'Tittagudi', 'Udayarpalayam', 'Udumalaipettai',
-    'Ulundurpet', 'Usilampatti', 'Uthangarai', 'Uthiramerur', 'Uthamapalayam', 'Valparai',
-    'Vandavasi', 'Vaniyambadi', 'Vanur', 'Vedaranyam', 'Vellore', 'Velachery', 'Veppanahalli',
-    'Vilavancode', 'Vilathikulam', 'Villivakkam', 'Viluppuram', 'Viralimalai', 'Virudhachalam',
-    'Virudhunagar', 'Vridhachalam', 'Walajapet', 'Yercaud'
-  ]
+  const lokSabhaToMlaMapping = {
+    'Arakkonam': ["Arakkonam","Sholinghur","Ranipet","Arcot","Cheyyar","Vandavasi"],
+    'Arani': ["Arani","Cheyyar","Vandavasi","Polur","Tiruvannamalai","Kilpennathur"],
+    'Aruppukkottai': ["Aruppukkottai","Tirumangalam","Sattur","Sivakasi","Virudhunagar","Rajapalayam"],
+    'Chengalpattu': ["Chengalpattu","Thiruporur","Madurantakam","Uthiramerur","Kancheepuram","Alandur"],
+    'Chennai Central': ["Chennai Central","Chepauk-Thiruvallikeni","Thousand Lights","Anna Nagar","Villivakkam","Egmore"],
+    'Chennai North': ["Chennai North","Royapuram","Kolathur","Thiru-Vi-Ka-Nagar","Perambur","Purasawalkam"],
+    'Chennai South': ["Chennai South","Velachery","Sholinganallur","Tambaram","Pallavaram","Saidapet"],
+    'Chidambaram': ["Chidambaram","Kattumannarkoil","Vriddachalam","Neyveli","Cuddalore","Kurinjipadi"],
+    'Coimbatore': ["Coimbatore North","Coimbatore South","Kavundampalayam","Singanallur","Sulur","Palladam"],
+    'Cuddalore': ["Cuddalore","Panruti","Rishivandinam","Sankarapuram","Ulundurpet"],
+    'Dharmapuri': ["Dharmapuri","Palacode","Pennagaram","Harur","Krishnagiri","Bargur"],
+    'Dindigul': ["Dindigul","Natham","Nilakottai","Sholavandan","Madurai East","Melur"],
+    'Erode': ["Erode East","Erode West","Modakurichi","Kodumudi","Perundurai","Bhavani"],
+    'Kallakurichi': ["Kallakurichi","Sankarapuram","Tirukoilur","Ulundurpet","Rishivandinam"],
+    'Kancheepuram': ["Kancheepuram","Sriperumbudur","Kundrathur","St. Thomas Mount","Pallavaram","Tambaram"],
+    'Kanniyakumari': ["Kanniyakumari","Nagercoil","Colachel","Padmanabhapuram","Vilavancode","Kalkulam"],
+    'Karur': ["Karur","Krishnarayapuram","Manapparai","Kulithalai","Musiri","Lalgudi"],
+    'Krishnagiri': ["Krishnagiri","Hosur","Uthangarai","Bargur","Harur","Dharmapuri"],
+    'Madurai': ["Madurai Central","Madurai East","Madurai North","Madurai South","Madurai West","Thiruparankundram"],
+    'Mayiladuthurai': ["Mayiladuthurai","Tharangambadi","Thiruthuraipoondi","Vedaranyam","Nagapattinam","Kilvelur"],
+    'Nagapattinam': ["Nagapattinam","Kilvelur","Thirukkuvalai","Vedaranyam","Mayiladuthurai","Sirkazhi"],
+    'Namakkal': ["Namakkal","Rasipuram","Senthamangalam","Komarapalayam","Tiruchengode","Sankari"],
+    'Nilgiris': ["Udhagamandalam","Coonoor","Kotagiri","Gudalur","Mettupalayam","Avanashi"],
+    'Perambalur': ["Perambalur","Kunnam","Alathur","Veppanthattai","Ariyalur","Jayankondam"],
+    'Pollachi': ["Pollachi","Valparai","Udumalaipettai","Kinathukadavu","Coimbatore South","Sulur"],
+    'Pudukkottai': ["Pudukkottai","Thirumayam","Alangudi","Aranthangi","Gandharvakottai","Viralimalai"],
+    'Ramanathapuram': ["Ramanathapuram","Mudukulathur","Paramakudi","Rameswaram","Kadaladi","Mandapam"],
+    'Salem': ["Salem North","Salem South","Salem West","Veerapandi","Edappadi","Sankari"],
+    'Sivaganga': ["Sivaganga","Karaikudi","Devakottai","Manamadurai","Tirupathur","Ramachandrapuram"],
+    'Sriperumbudur': ["Sriperumbudur","Kundrathur","St. Thomas Mount","Pallavaram","Tambaram","Chengalpattu"],
+    'Thanjavur': ["Thanjavur","Orathanadu","Thiruvonam","Budalur","Kumbakonam","Papanasam"],
+    'Theni': ["Theni","Bodinayakanur","Periyakulam","Uthamapalayam","Andipatti","Cumbum"],
+    'Thoothukudi': ["Thoothukudi","Vilathikulam","Ottapidaram","Kovilpatti","Sathankulam","Kadayanallur"],
+    'Tiruchirappalli': ["Srirangam","Tiruchirappalli East","Tiruchirappalli West","Lalgudi","Manachanallur","Musiri"],
+    'Tirunelveli': ["Tirunelveli","Palayamkottai","Ambasamudram","Tenkasi","Shenkottai","Alangulam"],
+    'Tiruppur': ["Tiruppur North","Tiruppur South","Palladam","Udumalaipettai","Avanashi","Dharapuram"],
+    'Tiruvallur': ["Tiruvallur","Ponneri","Gummidipoondi","Poonamallee","Avadi","Maduravoyal"],
+    'Tiruvannamalai': ["Tiruvannamalai","Kilpennathur","Kalasapakkam","Polur","Arani","Cheyyar"],
+    'Vellore': ["Vellore","Anaicut","Gudiyatham","Vaniyambadi","Ambur","Jolarpet"],
+  };
+
+  const allAssemblyConstituencies = Object.values(lokSabhaToMlaMapping).flat()
 
   useEffect(() => {
     const submitted  = localStorage.getItem('surveySubmitted')
@@ -101,15 +110,22 @@ export default function Survey() {
 
 
   const handleInputChange = (name, value) => {
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setFormData(prev => {
+      const newData = { ...prev, [name]: value }
+      // Reset MLA constituency when Lok Sabha constituency changes
+      if (name === 'lokSabhaConstituency') {
+        newData.mlaConstituency = ''
+      }
+      return newData
+    })
   }
 
   const questions = [
     { id: 'dmkPromises', label: 'Is current DMK govt fulfilled all their promise?', type: 'radio', required: true, options: ['Yes', 'No', 'Dont Know'] },
     { id: 'bestAlternative', label: 'Who is best alternative for ruling DMK', type: 'radio', required: true, options: ['ADMK+', 'TVK', 'NTK', 'NO one'] },
-    { id: 'support2026', label: 'Your support in 2026 Election', type: 'radio', required: true, options: ['DMK', 'ADMK+', 'TVK', 'NTK', 'Others'] },
+    { id: 'support2026', label: 'Your support in 2026 Election', type: 'radio', required: true, options: ['DMK+', 'ADMK+', 'TVK', 'NTK', 'Others'] },
     { id: 'lokSabhaConstituency', label: 'Your Lok Sabha Constituency', type: 'searchable-select', required: true, options: lokSabhaConstituencies },
-    { id: 'mlaConstituency', label: 'Your MLA Constituency', type: 'searchable-select', required: true, options: assemblyConstituencies },
+    { id: 'mlaConstituency', label: 'Your MLA Constituency', type: 'searchable-select', required: true, options: formData.lokSabhaConstituency ? lokSabhaToMlaMapping[formData.lokSabhaConstituency] || [] : allAssemblyConstituencies },
     { id: 'age', label: 'Age', type: 'radio', required: true, options: ['Less than 25', '25 to 35', '36 to 50', '51 to 70', 'Greater than 70'] },
     { id: 'sex', label: 'Sex', type: 'radio', required: true, options: ['Male', 'Female', 'Other'] },
     { id: 'voteCommitment', label: 'Are you committed to vote on Election Date', type: 'radio', required: true, options: ['Yes', 'No. I Live outside tamilnadu/India', 'No but influence in family/friend circle'] },
