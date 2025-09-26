@@ -1,212 +1,600 @@
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Survey() {
   const initialFormData = {
-    dmkPromises: '',
-    bestAlternative: '',
-    support2026: '',
-    lokSabhaConstituency: '',
-    mlaConstituency: '',
-    age: '',
-    sex: '',
-    voteCommitment: '',
-    satisfaction: '',
-    frequency: '',
-    recommendation: '',
-    improvement: '',
-    contact: '',
-    feedback: ''
-  }
-
-  const [formData, setFormData] = useState(initialFormData)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
-  const [lokSabhaSearch, setLokSabhaSearch] = useState('')
-  const [isLokSabhaOpen, setIsLokSabhaOpen] = useState(false)
-  const [mlaSearch, setMlaSearch] = useState('')
-  const [isMlaOpen, setIsMlaOpen] = useState(false)
-
-  const lokSabhaConstituencies = [
-    'Arakkonam', 'Arani', 'Aruppukkottai', 'Chengalpattu', 'Chennai Central', 'Chennai North', 'Chennai South',
-    'Chidambaram', 'Coimbatore', 'Cuddalore', 'Dharmapuri', 'Dindigul', 'Erode', 'Kallakurichi',
-    'Kancheepuram', 'Kanniyakumari', 'Karur', 'Krishnagiri', 'Madurai', 'Mayiladuthurai', 'Nagapattinam',
-    'Namakkal', 'Nilgiris', 'Perambalur', 'Pollachi', 'Pudukkottai', 'Ramanathapuram', 'Salem',
-    'Sivaganga', 'Sriperumbudur', 'Thanjavur', 'Theni', 'Thoothukudi', 'Tiruchirappalli', 'Tirunelveli',
-    'Tiruppur', 'Tiruvallur', 'Tiruvannamalai', 'Vellore'
-  ]
-
-  const lokSabhaToMlaMapping = {
-    'Arakkonam': ["Arakkonam","Sholinghur","Ranipet","Arcot","Cheyyar","Vandavasi"],
-    'Arani': ["Arani","Cheyyar","Vandavasi","Polur","Tiruvannamalai","Kilpennathur"],
-    'Aruppukkottai': ["Aruppukkottai","Tirumangalam","Sattur","Sivakasi","Virudhunagar","Rajapalayam"],
-    'Chengalpattu': ["Chengalpattu","Thiruporur","Madurantakam","Uthiramerur","Kancheepuram","Alandur"],
-    'Chennai Central': ["Chennai Central","Chepauk-Thiruvallikeni","Thousand Lights","Anna Nagar","Villivakkam","Egmore"],
-    'Chennai North': ["Chennai North","Royapuram","Kolathur","Thiru-Vi-Ka-Nagar","Perambur","Purasawalkam"],
-    'Chennai South': ["Chennai South","Velachery","Sholinganallur","Tambaram","Pallavaram","Saidapet"],
-    'Chidambaram': ["Chidambaram","Kattumannarkoil","Vriddachalam","Neyveli","Cuddalore","Kurinjipadi"],
-    'Coimbatore': ["Coimbatore North","Coimbatore South","Kavundampalayam","Singanallur","Sulur","Palladam"],
-    'Cuddalore': ["Cuddalore","Panruti","Rishivandinam","Sankarapuram","Ulundurpet"],
-    'Dharmapuri': ["Dharmapuri","Palacode","Pennagaram","Harur","Krishnagiri","Bargur"],
-    'Dindigul': ["Dindigul","Natham","Nilakottai","Sholavandan","Madurai East","Melur"],
-    'Erode': ["Erode East","Erode West","Modakurichi","Kodumudi","Perundurai","Bhavani"],
-    'Kallakurichi': ["Kallakurichi","Sankarapuram","Tirukoilur","Ulundurpet","Rishivandinam"],
-    'Kancheepuram': ["Kancheepuram","Sriperumbudur","Kundrathur","St. Thomas Mount","Pallavaram","Tambaram"],
-    'Kanniyakumari': ["Kanniyakumari","Nagercoil","Colachel","Padmanabhapuram","Vilavancode","Kalkulam"],
-    'Karur': ["Karur","Krishnarayapuram","Manapparai","Kulithalai","Musiri","Lalgudi"],
-    'Krishnagiri': ["Krishnagiri","Hosur","Uthangarai","Bargur","Harur","Dharmapuri"],
-    'Madurai': ["Madurai Central","Madurai East","Madurai North","Madurai South","Madurai West","Thiruparankundram"],
-    'Mayiladuthurai': ["Mayiladuthurai","Tharangambadi","Thiruthuraipoondi","Vedaranyam","Nagapattinam","Kilvelur"],
-    'Nagapattinam': ["Nagapattinam","Kilvelur","Thirukkuvalai","Vedaranyam","Mayiladuthurai","Sirkazhi"],
-    'Namakkal': ["Namakkal","Rasipuram","Senthamangalam","Komarapalayam","Tiruchengode","Sankari"],
-    'Nilgiris': ["Udhagamandalam","Coonoor","Kotagiri","Gudalur","Mettupalayam","Avanashi"],
-    'Perambalur': ["Perambalur","Kunnam","Alathur","Veppanthattai","Ariyalur","Jayankondam"],
-    'Pollachi': ["Pollachi","Valparai","Udumalaipettai","Kinathukadavu","Coimbatore South","Sulur"],
-    'Pudukkottai': ["Pudukkottai","Thirumayam","Alangudi","Aranthangi","Gandharvakottai","Viralimalai"],
-    'Ramanathapuram': ["Ramanathapuram","Mudukulathur","Paramakudi","Rameswaram","Kadaladi","Mandapam"],
-    'Salem': ["Salem North","Salem South","Salem West","Veerapandi","Edappadi","Sankari"],
-    'Sivaganga': ["Sivaganga","Karaikudi","Devakottai","Manamadurai","Tirupathur","Ramachandrapuram"],
-    'Sriperumbudur': ["Sriperumbudur","Kundrathur","St. Thomas Mount","Pallavaram","Tambaram","Chengalpattu"],
-    'Thanjavur': ["Thanjavur","Orathanadu","Thiruvonam","Budalur","Kumbakonam","Papanasam"],
-    'Theni': ["Theni","Bodinayakanur","Periyakulam","Uthamapalayam","Andipatti","Cumbum"],
-    'Thoothukudi': ["Thoothukudi","Vilathikulam","Ottapidaram","Kovilpatti","Sathankulam","Kadayanallur"],
-    'Tiruchirappalli': ["Srirangam","Tiruchirappalli East","Tiruchirappalli West","Lalgudi","Manachanallur","Musiri"],
-    'Tirunelveli': ["Tirunelveli","Palayamkottai","Ambasamudram","Tenkasi","Shenkottai","Alangulam"],
-    'Tiruppur': ["Tiruppur North","Tiruppur South","Palladam","Udumalaipettai","Avanashi","Dharapuram"],
-    'Tiruvallur': ["Tiruvallur","Ponneri","Gummidipoondi","Poonamallee","Avadi","Maduravoyal"],
-    'Tiruvannamalai': ["Tiruvannamalai","Kilpennathur","Kalasapakkam","Polur","Arani","Cheyyar"],
-    'Vellore': ["Vellore","Anaicut","Gudiyatham","Vaniyambadi","Ambur","Jolarpet"],
+    dmkPromises: "",
+    bestAlternative: "",
+    support2026: "",
+    lokSabhaConstituency: "",
+    mlaConstituency: "",
+    age: "",
+    sex: "",
+    voteCommitment: "",
+    satisfaction: "",
+    frequency: "",
+    recommendation: "",
+    improvement: "",
+    contact: "",
+    feedback: "",
   };
 
-  const allAssemblyConstituencies = Object.values(lokSabhaToMlaMapping).flat()
+  const [formData, setFormData] = useState(initialFormData);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [lokSabhaSearch, setLokSabhaSearch] = useState("");
+  const [isLokSabhaOpen, setIsLokSabhaOpen] = useState(false);
+  const [mlaSearch, setMlaSearch] = useState("");
+  const [isMlaOpen, setIsMlaOpen] = useState(false);
+
+  const lokSabhaConstituencies = [
+    "Arakkonam",
+    "Arani",
+    "Aruppukkottai",
+    "Chengalpattu",
+    "Chennai Central",
+    "Chennai North",
+    "Chennai South",
+    "Chidambaram",
+    "Coimbatore",
+    "Cuddalore",
+    "Dharmapuri",
+    "Dindigul",
+    "Erode",
+    "Kallakurichi",
+    "Kancheepuram",
+    "Kanniyakumari",
+    "Karur",
+    "Krishnagiri",
+    "Madurai",
+    "Mayiladuthurai",
+    "Nagapattinam",
+    "Namakkal",
+    "Nilgiris",
+    "Perambalur",
+    "Pollachi",
+    "Pudukkottai",
+    "Ramanathapuram",
+    "Salem",
+    "Sivaganga",
+    "Sriperumbudur",
+    "Thanjavur",
+    "Theni",
+    "Thoothukudi",
+    "Tiruchirappalli",
+    "Tirunelveli",
+    "Tiruppur",
+    "Tiruvallur",
+    "Tiruvannamalai",
+    "Vellore",
+  ];
+
+  const lokSabhaToMlaMapping = {
+    Arakkonam: [
+      "Arakkonam",
+      "Sholinghur",
+      "Ranipet",
+      "Arcot",
+      "Cheyyar",
+      "Vandavasi",
+    ],
+    Arani: [
+      "Arani",
+      "Cheyyar",
+      "Vandavasi",
+      "Polur",
+      "Tiruvannamalai",
+      "Kilpennathur",
+    ],
+    Aruppukkottai: [
+      "Aruppukkottai",
+      "Tirumangalam",
+      "Sattur",
+      "Sivakasi",
+      "Virudhunagar",
+      "Rajapalayam",
+    ],
+    Chengalpattu: [
+      "Chengalpattu",
+      "Thiruporur",
+      "Madurantakam",
+      "Uthiramerur",
+      "Kancheepuram",
+      "Alandur",
+    ],
+    "Chennai Central": [
+      "Chennai Central",
+      "Chepauk-Thiruvallikeni",
+      "Thousand Lights",
+      "Anna Nagar",
+      "Villivakkam",
+      "Egmore",
+    ],
+    "Chennai North": [
+      "Chennai North",
+      "Royapuram",
+      "Kolathur",
+      "Thiru-Vi-Ka-Nagar",
+      "Perambur",
+      "Purasawalkam",
+    ],
+    "Chennai South": [
+      "Chennai South",
+      "Velachery",
+      "Sholinganallur",
+      "Tambaram",
+      "Pallavaram",
+      "Saidapet",
+    ],
+    Chidambaram: [
+      "Chidambaram",
+      "Kattumannarkoil",
+      "Vriddachalam",
+      "Neyveli",
+      "Cuddalore",
+      "Kurinjipadi",
+    ],
+    Coimbatore: [
+      "Coimbatore North",
+      "Coimbatore South",
+      "Kavundampalayam",
+      "Singanallur",
+      "Sulur",
+      "Palladam",
+    ],
+    Cuddalore: [
+      "Cuddalore",
+      "Panruti",
+      "Rishivandinam",
+      "Sankarapuram",
+      "Ulundurpet",
+    ],
+    Dharmapuri: [
+      "Dharmapuri",
+      "Palacode",
+      "Pennagaram",
+      "Harur",
+      "Krishnagiri",
+      "Bargur",
+    ],
+    Dindigul: [
+      "Dindigul",
+      "Natham",
+      "Nilakottai",
+      "Sholavandan",
+      "Madurai East",
+      "Melur",
+    ],
+    Erode: [
+      "Erode East",
+      "Erode West",
+      "Modakurichi",
+      "Kodumudi",
+      "Perundurai",
+      "Bhavani",
+    ],
+    Kallakurichi: [
+      "Kallakurichi",
+      "Sankarapuram",
+      "Tirukoilur",
+      "Ulundurpet",
+      "Rishivandinam",
+    ],
+    Kancheepuram: [
+      "Kancheepuram",
+      "Sriperumbudur",
+      "Kundrathur",
+      "St. Thomas Mount",
+      "Pallavaram",
+      "Tambaram",
+    ],
+    Kanniyakumari: [
+      "Kanniyakumari",
+      "Nagercoil",
+      "Colachel",
+      "Padmanabhapuram",
+      "Vilavancode",
+      "Kalkulam",
+    ],
+    Karur: [
+      "Karur",
+      "Krishnarayapuram",
+      "Manapparai",
+      "Kulithalai",
+      "Musiri",
+      "Lalgudi",
+    ],
+    Krishnagiri: [
+      "Krishnagiri",
+      "Hosur",
+      "Uthangarai",
+      "Bargur",
+      "Harur",
+      "Dharmapuri",
+    ],
+    Madurai: [
+      "Madurai Central",
+      "Madurai East",
+      "Madurai North",
+      "Madurai South",
+      "Madurai West",
+      "Thiruparankundram",
+    ],
+    Mayiladuthurai: [
+      "Mayiladuthurai",
+      "Tharangambadi",
+      "Thiruthuraipoondi",
+      "Vedaranyam",
+      "Nagapattinam",
+      "Kilvelur",
+    ],
+    Nagapattinam: [
+      "Nagapattinam",
+      "Kilvelur",
+      "Thirukkuvalai",
+      "Vedaranyam",
+      "Mayiladuthurai",
+      "Sirkazhi",
+    ],
+    Namakkal: [
+      "Namakkal",
+      "Rasipuram",
+      "Senthamangalam",
+      "Komarapalayam",
+      "Tiruchengode",
+      "Sankari",
+    ],
+    Nilgiris: [
+      "Udhagamandalam",
+      "Coonoor",
+      "Kotagiri",
+      "Gudalur",
+      "Mettupalayam",
+      "Avanashi",
+    ],
+    Perambalur: [
+      "Perambalur",
+      "Kunnam",
+      "Alathur",
+      "Veppanthattai",
+      "Ariyalur",
+      "Jayankondam",
+    ],
+    Pollachi: [
+      "Pollachi",
+      "Valparai",
+      "Udumalaipettai",
+      "Kinathukadavu",
+      "Coimbatore South",
+      "Sulur",
+    ],
+    Pudukkottai: [
+      "Pudukkottai",
+      "Thirumayam",
+      "Alangudi",
+      "Aranthangi",
+      "Gandharvakottai",
+      "Viralimalai",
+    ],
+    Ramanathapuram: [
+      "Ramanathapuram",
+      "Mudukulathur",
+      "Paramakudi",
+      "Rameswaram",
+      "Kadaladi",
+      "Mandapam",
+    ],
+    Salem: [
+      "Salem North",
+      "Salem South",
+      "Salem West",
+      "Veerapandi",
+      "Edappadi",
+      "Sankari",
+    ],
+    Sivaganga: [
+      "Sivaganga",
+      "Karaikudi",
+      "Devakottai",
+      "Manamadurai",
+      "Tirupathur",
+      "Ramachandrapuram",
+    ],
+    Sriperumbudur: [
+      "Sriperumbudur",
+      "Kundrathur",
+      "St. Thomas Mount",
+      "Pallavaram",
+      "Tambaram",
+      "Chengalpattu",
+    ],
+    Thanjavur: [
+      "Thanjavur",
+      "Orathanadu",
+      "Thiruvonam",
+      "Budalur",
+      "Kumbakonam",
+      "Papanasam",
+    ],
+    Theni: [
+      "Theni",
+      "Bodinayakanur",
+      "Periyakulam",
+      "Uthamapalayam",
+      "Andipatti",
+      "Cumbum",
+    ],
+    Thoothukudi: [
+      "Thoothukudi",
+      "Vilathikulam",
+      "Ottapidaram",
+      "Kovilpatti",
+      "Sathankulam",
+      "Kadayanallur",
+    ],
+    Tiruchirappalli: [
+      "Srirangam",
+      "Tiruchirappalli East",
+      "Tiruchirappalli West",
+      "Lalgudi",
+      "Manachanallur",
+      "Musiri",
+    ],
+    Tirunelveli: [
+      "Tirunelveli",
+      "Palayamkottai",
+      "Ambasamudram",
+      "Tenkasi",
+      "Shenkottai",
+      "Alangulam",
+    ],
+    Tiruppur: [
+      "Tiruppur North",
+      "Tiruppur South",
+      "Palladam",
+      "Udumalaipettai",
+      "Avanashi",
+      "Dharapuram",
+    ],
+    Tiruvallur: [
+      "Tiruvallur",
+      "Ponneri",
+      "Gummidipoondi",
+      "Poonamallee",
+      "Avadi",
+      "Maduravoyal",
+    ],
+    Tiruvannamalai: [
+      "Tiruvannamalai",
+      "Kilpennathur",
+      "Kalasapakkam",
+      "Polur",
+      "Arani",
+      "Cheyyar",
+    ],
+    Vellore: [
+      "Vellore",
+      "Anaicut",
+      "Gudiyatham",
+      "Vaniyambadi",
+      "Ambur",
+      "Jolarpet",
+    ],
+  };
+
+  const allAssemblyConstituencies = Object.values(lokSabhaToMlaMapping).flat();
 
   useEffect(() => {
-    const submitted  = localStorage.getItem('surveySubmitted')
-    if (submitted === 'true') {
-      setIsSubmitted(true)
+    const submitted = localStorage.getItem("surveySubmitted");
+    if (submitted === "true") {
+      setIsSubmitted(true);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.searchable-dropdown')) {
-        setIsLokSabhaOpen(false)
-        setIsMlaOpen(false)
-        setLokSabhaSearch('')
-        setMlaSearch('')
+      if (!event.target.closest(".searchable-dropdown")) {
+        setIsLokSabhaOpen(false);
+        setIsMlaOpen(false);
+        setLokSabhaSearch("");
+        setMlaSearch("");
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-
-
-
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleInputChange = (name, value) => {
-    setFormData(prev => {
-      const newData = { ...prev, [name]: value }
+    setFormData((prev) => {
+      const newData = { ...prev, [name]: value };
       // Reset MLA constituency when Lok Sabha constituency changes
-      if (name === 'lokSabhaConstituency') {
-        newData.mlaConstituency = ''
+      if (name === "lokSabhaConstituency") {
+        newData.mlaConstituency = "";
       }
-      return newData
-    })
-  }
+      return newData;
+    });
+  };
 
   const questions = [
-    { id: 'dmkPromises', label: 'Is current DMK govt fulfilled all their promise?', type: 'radio', required: true, options: ['Yes', 'No', 'Dont Know'] },
-    { id: 'bestAlternative', label: 'Who is best alternative for ruling DMK', type: 'radio', required: true, options: ['ADMK+', 'TVK', 'NTK', 'NO one'] },
-    { id: 'support2026', label: 'Your support in 2026 Election', type: 'radio', required: true, options: ['DMK+', 'ADMK+', 'TVK', 'NTK', 'Others'] },
-    { id: 'lokSabhaConstituency', label: 'Your Lok Sabha Constituency', type: 'searchable-select', required: true, options: lokSabhaConstituencies },
-    { id: 'mlaConstituency', label: 'Your MLA Constituency', type: 'searchable-select', required: true, options: formData.lokSabhaConstituency ? lokSabhaToMlaMapping[formData.lokSabhaConstituency] || [] : allAssemblyConstituencies },
-    { id: 'age', label: 'Age', type: 'radio', required: true, options: ['Less than 25', '25 to 35', '36 to 50', '51 to 70', 'Greater than 70'] },
-    { id: 'sex', label: 'Sex', type: 'radio', required: true, options: ['Male', 'Female', 'Other'] },
-    { id: 'voteCommitment', label: 'Are you committed to vote on Election Date', type: 'radio', required: true, options: ['Yes', 'No. I Live outside tamilnadu/India', 'No but influence in family/friend circle'] },
-   
-  ]
+    {
+      id: "dmkPromises",
+      label: "Is current DMK govt fulfilled all their promise?",
+      type: "radio",
+      required: true,
+      options: ["Yes", "No", "Dont Know"],
+    },
+    {
+      id: "bestAlternative",
+      label: "Who is best alternative for ruling DMK",
+      type: "radio",
+      required: true,
+      options: ["ADMK+", "TVK", "NTK", "NO one"],
+    },
+    {
+      id: "support2026",
+      label: "Your support in 2026 Election",
+      type: "radio",
+      required: true,
+      options: ["DMK+", "ADMK+", "TVK", "NTK", "Others"],
+    },
+    {
+      id: "lokSabhaConstituency",
+      label: "Your Lok Sabha Constituency",
+      type: "searchable-select",
+      required: true,
+      options: lokSabhaConstituencies,
+    },
+    {
+      id: "mlaConstituency",
+      label: "Your MLA Constituency",
+      type: "searchable-select",
+      required: true,
+      options: formData.lokSabhaConstituency
+        ? lokSabhaToMlaMapping[formData.lokSabhaConstituency] || []
+        : [],
+      disabled: !formData.lokSabhaConstituency,
+    },
+    {
+      id: "age",
+      label: "Age",
+      type: "radio",
+      required: true,
+      options: [
+        "Less than 25",
+        "25 to 35",
+        "36 to 50",
+        "51 to 70",
+        "Greater than 70",
+      ],
+    },
+    {
+      id: "sex",
+      label: "Sex",
+      type: "radio",
+      required: true,
+      options: ["Male", "Female", "Other"],
+    },
+    {
+      id: "voteCommitment",
+      label: "Are you committed to vote on Election Date",
+      type: "radio",
+      required: true,
+      options: [
+        "Yes",
+        "No. I Live outside tamilnadu/India",
+        "No but influence in family/friend circle",
+      ],
+    },
+  ];
 
   const getCurrentLocation = () => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocation not supported'))
-        return
+        reject(new Error("Geolocation not supported"));
+        return;
       }
-      
+
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           try {
-            const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`)
-            const data = await response.json()
-            resolve(`${data.city}, ${data.principalSubdivision}, ${data.countryName}`)
+            const response = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`
+            );
+            const data = await response.json();
+            resolve(
+              `${data.city}, ${data.principalSubdivision}, ${data.countryName}`
+            );
           } catch {
-            resolve(`${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`)
+            resolve(
+              `${position.coords.latitude.toFixed(
+                4
+              )}, ${position.coords.longitude.toFixed(4)}`
+            );
           }
         },
         (error) => reject(error),
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-      )
-    })
-  }
+      );
+    });
+  };
 
   const saveToLocalStorage = (data) => {
-    const existingData = JSON.parse(localStorage.getItem('surveyData') || '[]')
-    existingData.push(data)
-    localStorage.setItem('surveyData', JSON.stringify(existingData))
-    localStorage.setItem('surveySubmitted', 'true')
-  }
+    const existingData = JSON.parse(localStorage.getItem("surveyData") || "[]");
+    existingData.push(data);
+    localStorage.setItem("surveyData", JSON.stringify(existingData));
+    localStorage.setItem("surveySubmitted", "true");
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     // Validate required fields
-    const requiredFields = questions.filter(q => q.required).map(q => q.id)
-    const missingFields = requiredFields.filter(field => !formData[field])
-    
+    const requiredFields = questions.filter((q) => q.required).map((q) => q.id);
+    const missingFields = requiredFields.filter((field) => !formData[field]);
+
     if (missingFields.length > 0) {
-      setToastMessage('Please fill in all required fields!')
-      setShowToast(true)
-      setTimeout(() => setShowToast(false), 3000)
-      return
+      setToastMessage("Please fill in all required fields!");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
     }
-    
-    const currentTime = new Date().toLocaleString('en-US', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-    })
-    
-    let location
+
+    const currentTime = new Date().toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+
+    let location;
     try {
-      location = await getCurrentLocation()
+      location = await getCurrentLocation();
     } catch (error) {
-      location = 'Location access denied or unavailable'
+      location = "Location access denied or unavailable";
     }
-    
-    const submissionData = { ...formData, submittedAt: currentTime, location }
-    
-    saveToLocalStorage(submissionData)
-    console.log('Survey Submission:', submissionData)
-    setIsSubmitted(true)
-  }
+
+    const submissionData = { ...formData, submittedAt: currentTime, location };
+
+    saveToLocalStorage(submissionData);
+    console.log("Survey Submission:", submissionData);
+    setIsSubmitted(true);
+  };
 
   const renderQuestion = (question, index) => {
-    const { id, label, type, required, options, optionLabels, placeholder } = question
-    const questionNumber = index + 1
-    const labelText = `${questionNumber}. ${label}${required ? ' *' : ''}`
+    const { id, label, type, required, options, optionLabels, placeholder } =
+      question;
+    const questionNumber = index + 1;
+    const labelText = `${questionNumber}. ${label}${required ? " *" : ""}`;
 
-    if (type === 'input' || type === 'tel') {
+    if (type === "input" || type === "tel") {
       return (
         <div key={id} className="space-y-2">
-          <Label htmlFor={id} className="text-sm sm:text-base font-medium">{labelText}</Label>
+          <Label htmlFor={id} className="text-sm sm:text-base font-medium">
+            {labelText}
+          </Label>
           <Input
             id={id}
-            type={type === 'tel' ? 'tel' : 'text'}
+            type={type === "tel" ? "tel" : "text"}
             value={formData[id]}
             onChange={(e) => handleInputChange(id, e.target.value)}
             placeholder={placeholder}
@@ -214,16 +602,21 @@ export default function Survey() {
             className="w-full h-10 text-sm sm:text-base"
           />
         </div>
-      )
+      );
     }
 
-    if (type === 'radio') {
+    if (type === "radio") {
       return (
         <div key={id} className="space-y-3">
-          <Label className="text-sm sm:text-base font-medium">{labelText}</Label>
+          <Label className="text-sm sm:text-base font-medium">
+            {labelText}
+          </Label>
           <div className="space-y-2">
             {options.map((option) => (
-              <label key={option} className="flex items-center space-x-3 cursor-pointer">
+              <label
+                key={option}
+                className="flex items-center space-x-3 cursor-pointer"
+              >
                 <input
                   type="radio"
                   name={id}
@@ -238,59 +631,61 @@ export default function Survey() {
             ))}
           </div>
         </div>
-      )
+      );
     }
 
+    if (type === "searchable-select") {
+      const isLokSabha = id === "lokSabhaConstituency";
+      const isDisabled = question.disabled;
+      const isOpen = isLokSabha ? isLokSabhaOpen : isMlaOpen;
+      const setOpen = isLokSabha ? setIsLokSabhaOpen : setIsMlaOpen;
 
-
-    if (type === 'searchable-select') {
-      const isLokSabha = id === 'lokSabhaConstituency'
-      const searchValue = isLokSabha ? lokSabhaSearch : mlaSearch
-      const isOpen = isLokSabha ? isLokSabhaOpen : isMlaOpen
-      const setSearch = isLokSabha ? setLokSabhaSearch : setMlaSearch
-      const setOpen = isLokSabha ? setIsLokSabhaOpen : setIsMlaOpen
-      
-      const filteredOptions = options.filter(option => 
-        option.toLowerCase().includes(searchValue.toLowerCase())
-      )
-      
       return (
         <div key={id} className="space-y-2 relative searchable-dropdown">
-          <Label htmlFor={id} className="text-sm sm:text-base font-medium">{labelText}</Label>
+          <Label htmlFor={id} className="text-sm sm:text-base font-medium">
+            {labelText}
+          </Label>
           <div className="relative">
             <button
               type="button"
-              onClick={() => setOpen(!isOpen)}
-              className="w-full h-10 px-3 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onClick={() => !isDisabled && setOpen(!isOpen)}
+              disabled={isDisabled}
+              className={`w-full h-10 px-3 py-2 text-left border border-gray-300 rounded-md shadow-sm text-sm sm:text-base focus:outline-none ${
+                isDisabled
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              }`}
             >
-              {formData[id] || `Select ${label.toLowerCase()}`}
-              <svg className="absolute right-3 top-3 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              {formData[id] ||
+                (isDisabled
+                  ? "Select Lok Sabha constituency first"
+                  : `Select ${label.toLowerCase()}`)}
+              <svg
+                className="absolute right-3 top-3 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
-            
-            {isOpen && (
+
+            {isOpen && !isDisabled && (
               <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-hidden">
-                <div className="p-2 border-b">
-                  <Input
-                    type="text"
-                    placeholder="Search constituencies..."
-                    value={searchValue}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full h-8 text-sm"
-                    autoFocus
-                  />
-                </div>
                 <div className="max-h-48 overflow-y-auto">
-                  {filteredOptions.length > 0 ? (
-                    filteredOptions.map((option) => (
+                  {options.length > 0 ? (
+                    options.map((option) => (
                       <button
                         key={option}
                         type="button"
                         onClick={() => {
-                          handleInputChange(id, option)
-                          setOpen(false)
-                          setSearch('')
+                          handleInputChange(id, option);
+                          setOpen(false);
                         }}
                         className="w-full px-3 py-2 text-left text-sm sm:text-base hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                       >
@@ -298,49 +693,73 @@ export default function Survey() {
                       </button>
                     ))
                   ) : (
-                    <div className="px-3 py-2 text-sm text-gray-500">No constituencies found</div>
+                    <div className="px-3 py-2 text-sm text-gray-500">
+                      {isDisabled
+                        ? "Select Lok Sabha constituency first"
+                        : "No constituencies found"}
+                    </div>
                   )}
                 </div>
               </div>
             )}
           </div>
         </div>
-      )
+      );
     }
 
-    if (type === 'select') {
+    if (type === "select") {
       return (
         <div key={id} className="space-y-2">
-          <Label htmlFor={id} className="text-sm sm:text-base font-medium">{labelText}</Label>
-          <Select value={formData[id]} onValueChange={(value) => handleInputChange(id, value)} required={required}>
+          <Label htmlFor={id} className="text-sm sm:text-base font-medium">
+            {labelText}
+          </Label>
+          <Select
+            value={formData[id]}
+            onValueChange={(value) => handleInputChange(id, value)}
+            required={required}
+          >
             <SelectTrigger className="h-10 text-sm sm:text-base">
               <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
             </SelectTrigger>
             <SelectContent>
               {options.map((option, idx) => (
-                <SelectItem key={option} value={option} className="text-sm sm:text-base">
+                <SelectItem
+                  key={option}
+                  value={option}
+                  className="text-sm sm:text-base"
+                >
                   {optionLabels ? optionLabels[idx] : option}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-      )
+      );
     }
-  }
+  };
 
   const Toast = ({ message, show }) => {
-    if (!show) return null
-    
+    if (!show) return null;
+
     return (
       <div className="fixed top-4 left-3 right-3 sm:left-auto sm:right-4 sm:max-w-sm z-50 bg-red-500 text-white px-4 sm:px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 animate-in slide-in-from-top-2">
-        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        <svg
+          className="w-5 h-5 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+          />
         </svg>
         <span className="text-sm sm:text-base">{message}</span>
       </div>
-    )
-  }
+    );
+  };
 
   if (isSubmitted) {
     return (
@@ -350,8 +769,18 @@ export default function Survey() {
             <CardContent className="pt-6 px-4 sm:px-6">
               <div className="mb-4">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-8 h-8 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -359,13 +788,14 @@ export default function Survey() {
                 Thank You!
               </CardTitle>
               <CardDescription className="text-gray-600 text-sm sm:text-base">
-                Thank you for your response. Your feedback has been successfully recorded.
+                Thank you for your response. Your feedback has been successfully
+                recorded.
               </CardDescription>
             </CardContent>
           </Card>
         </div>
       </div>
-    )
+    );
   }
 
   return (
