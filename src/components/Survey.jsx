@@ -22,7 +22,6 @@ export default function Survey() {
     dmkPromises: "",
     bestAlternative: "",
     support2026: "",
-    lokSabhaConstituency: "",
     mlaConstituency: "",
     age: "",
     sex: "",
@@ -39,8 +38,6 @@ export default function Survey() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [lokSabhaSearch, setLokSabhaSearch] = useState("");
-  const [isLokSabhaOpen, setIsLokSabhaOpen] = useState(false);
   const [mlaSearch, setMlaSearch] = useState("");
   const [isMlaOpen, setIsMlaOpen] = useState(false);
 
@@ -399,7 +396,40 @@ export default function Survey() {
     ],
   };
 
-  const allAssemblyConstituencies = Object.values(lokSabhaToMlaMapping).flat();
+  const allAssemblyConstituencies = [
+    'Alangulam', 'Alandur', 'Alanganallur', 'Alathur', 'Ambur', 'Anavatti', 'Andipatti', 'Anna Nagar',
+    'Annur', 'Arakkonam', 'Arani', 'Aranthangi', 'Arcot', 'Ariyalur', 'Aruppukkottai', 'Attur',
+    'Avanashi', 'Avadi', 'Bargur', 'Bhavani', 'Bodinayakanur', 'Bhuvanagiri', 'Budalur', 'Chepauk-Thiruvallikeni',
+    'Cheranmahadevi', 'Chennai Central', 'Chennai North', 'Chennai South', 'Chengalpattu', 'Cheyyar', 'Chidambaram',
+    'Chinnasalem', 'Colachel', 'Coimbatore North', 'Coimbatore South', 'Coonoor', 'Cuddalore', 'Cumbum',
+    'Devakottai', 'Dharmapuri', 'Dharapuram', 'Dindigul', 'Dr. Radhakrishnan Nagar', 'Edappadi', 'Egmore',
+    'Erode East', 'Erode West', 'Gangavalli', 'Gandharvakottai', 'Gingee', 'Gobichettipalayam', 'Gudalur', 'Gudiyatham',
+    'Gummidipoondi', 'Harbour', 'Harur', 'Hosur', 'Jayankondam', 'Jolarpet', 'Kadaladi', 'Kadayanallur',
+    'Kallakurichi', 'Kalasapakkam', 'Kalkulam', 'Kancheepuram', 'Kangeyam', 'Kanniyakumari', 'Karaikudi',
+    'Karur', 'Katpadi', 'Kattumannarkoil', 'Kavundampalayam', 'Kilpennathur', 'Kilvelur', 'Kinathukadavu',
+    'Kodumudi', 'Komarapalayam', 'Kotagiri', 'Kovilpatti', 'Krishnagiri', 'Krishnarayapuram', 'Kulithalai',
+    'Kumbakonam', 'Kundrathur', 'Kunnam', 'Kurinjipadi', 'Lalgudi', 'Madathukulam', 'Madurai Central',
+    'Madurai East', 'Madurai North', 'Madurai South', 'Madurai West', 'Maduravoyal', 'Manamadurai', 'Manachanallur',
+    'Manapparai', 'Mandapam', 'Mannargudi', 'Mayiladuthurai', 'Melur', 'Mettupalayam', 'Mettur', 'Modakurichi',
+    'Mudukulathur', 'Musiri', 'Mylapore', 'Nagercoil', 'Nagapattinam', 'Namakkal', 'Nanguneri', 'Nannilam',
+    'Natham', 'Neyveli', 'Nilakottai', 'Oddanchatram', 'Omalur', 'Orathanadu', 'Ottapidaram', 'Padmanabhapuram',
+    'Palacode', 'Palacurichi', 'Palani', 'Palayamkottai', 'Palladam', 'Pallathur', 'Pallavaram', 'Panruti',
+    'Papanasam', 'Paramakudi', 'Pennagaram', 'Perambalur', 'Perambur', 'Peranamallur', 'Periyakulam', 'Perundurai',
+    'Pollachi', 'Polur', 'Ponneri', 'Poonamallee', 'Pudukkottai', 'Purasawalkam', 'Radhapuram', 'Rajapalayam',
+    'Ramachandrapuram', 'Ramanathapuram', 'Rameswaram', 'Ranipet', 'Rasipuram', 'Rishivandinam', 'Royapuram',
+    'Saidapet', 'Salem North', 'Salem South', 'Salem West', 'Sankarankoil', 'Sankarapuram', 'Sankari',
+    'Sathankulam', 'Sattur', 'Sengottai', 'Senthamangalam', 'Shenkottai', 'Sholavandan', 'Sholinganallur',
+    'Sholinghur', 'Singanallur', 'Sirkali', 'Sirkazhi', 'Sivaganga', 'Sivakasi', 'Sriperumbudur', 'Srirangam',
+    'Srivaikuntam', 'St. Thomas Mount', 'Sulur', 'Tambaram', 'Tenkasi', 'Tharangambadi', 'Thanjavur', 'Theni',
+    'Thirumangalam', 'Thirumayam', 'Thirupparankundram', 'Thiruthuraipoondi', 'Thirukkuvalai', 'Thiruvarur',
+    'Thiruvidaimarudur', 'Thiruvonam', 'Thoothukudi', 'Thousand Lights', 'Tindivanam', 'Tiruchendur',
+    'Tiruchengode', 'Tiruchirappalli East', 'Tiruchirappalli West', 'Tirukoilur', 'Tirunelveli', 'Tirupathur',
+    'Tiruppur North', 'Tiruppur South', 'Tiruttani', 'Tiruvallur', 'Tiruvannamalai', 'Tiruverumbur', 'Tittagudi',
+    'Udayarpalayam', 'Udumalaipettai', 'Udhagamandalam', 'Ulundurpet', 'Usilampatti', 'Uthangarai', 'Uthiramerur',
+    'Uthamapalayam', 'Valparai', 'Vandavasi', 'Vaniyambadi', 'Vanur', 'Vedaranyam', 'Velachery', 'Vellore',
+    'Veppanahalli', 'Veerapandi', 'Veppanthattai', 'Vilavancode', 'Vilathikulam', 'Villivakkam', 'Viluppuram',
+    'Viralimalai', 'Virudhachalam', 'Virudhunagar', 'Vridhachalam', 'Walajapet', 'Yercaud'
+  ];
 
   useEffect(() => {
     const submitted = localStorage.getItem("surveySubmitted");
@@ -411,9 +441,7 @@ export default function Survey() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".searchable-dropdown")) {
-        setIsLokSabhaOpen(false);
         setIsMlaOpen(false);
-        setLokSabhaSearch("");
         setMlaSearch("");
       }
     };
@@ -422,14 +450,7 @@ export default function Survey() {
   }, []);
 
   const handleInputChange = (name, value) => {
-    setFormData((prev) => {
-      const newData = { ...prev, [name]: value };
-      // Reset MLA constituency when Lok Sabha constituency changes
-      if (name === "lokSabhaConstituency") {
-        newData.mlaConstituency = "";
-      }
-      return newData;
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const questions = [
@@ -455,21 +476,11 @@ export default function Survey() {
       options: ["DMK+", "ADMK+", "TVK", "NTK", "Others"],
     },
     {
-      id: "lokSabhaConstituency",
-      label: "Your Lok Sabha Constituency",
-      type: "searchable-select",
-      required: true,
-      options: lokSabhaConstituencies,
-    },
-    {
       id: "mlaConstituency",
       label: "Your MLA Constituency",
       type: "searchable-select",
       required: true,
-      options: formData.lokSabhaConstituency
-        ? lokSabhaToMlaMapping[formData.lokSabhaConstituency] || []
-        : [],
-      disabled: !formData.lokSabhaConstituency,
+      options: allAssemblyConstituencies,
     },
     {
       id: "age",
@@ -635,10 +646,9 @@ export default function Survey() {
     }
 
     if (type === "searchable-select") {
-      const isLokSabha = id === "lokSabhaConstituency";
-      const isDisabled = question.disabled;
-      const isOpen = isLokSabha ? isLokSabhaOpen : isMlaOpen;
-      const setOpen = isLokSabha ? setIsLokSabhaOpen : setIsMlaOpen;
+      const filteredOptions = options.filter(option => 
+        option.toLowerCase().includes(mlaSearch.toLowerCase())
+      );
 
       return (
         <div key={id} className="space-y-2 relative searchable-dropdown">
@@ -648,18 +658,10 @@ export default function Survey() {
           <div className="relative">
             <button
               type="button"
-              onClick={() => !isDisabled && setOpen(!isOpen)}
-              disabled={isDisabled}
-              className={`w-full h-10 px-3 py-2 text-left border border-gray-300 rounded-md shadow-sm text-sm sm:text-base focus:outline-none ${
-                isDisabled
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              }`}
+              onClick={() => setIsMlaOpen(!isMlaOpen)}
+              className="w-full h-10 px-3 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              {formData[id] ||
-                (isDisabled
-                  ? "Select Lok Sabha constituency first"
-                  : `Select ${label.toLowerCase()}`)}
+              {formData[id] || `Select ${label.toLowerCase()}`}
               <svg
                 className="absolute right-3 top-3 w-4 h-4"
                 fill="none"
@@ -675,17 +677,28 @@ export default function Survey() {
               </svg>
             </button>
 
-            {isOpen && !isDisabled && (
+            {isMlaOpen && (
               <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-hidden">
+                <div className="p-2 border-b">
+                  <Input
+                    type="text"
+                    placeholder="Search constituencies..."
+                    value={mlaSearch}
+                    onChange={(e) => setMlaSearch(e.target.value)}
+                    className="w-full h-8 text-sm"
+                    autoFocus
+                  />
+                </div>
                 <div className="max-h-48 overflow-y-auto">
-                  {options.length > 0 ? (
-                    options.map((option) => (
+                  {filteredOptions.length > 0 ? (
+                    filteredOptions.map((option) => (
                       <button
                         key={option}
                         type="button"
                         onClick={() => {
                           handleInputChange(id, option);
-                          setOpen(false);
+                          setIsMlaOpen(false);
+                          setMlaSearch("");
                         }}
                         className="w-full px-3 py-2 text-left text-sm sm:text-base hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                       >
@@ -694,9 +707,7 @@ export default function Survey() {
                     ))
                   ) : (
                     <div className="px-3 py-2 text-sm text-gray-500">
-                      {isDisabled
-                        ? "Select Lok Sabha constituency first"
-                        : "No constituencies found"}
+                      No constituencies found
                     </div>
                   )}
                 </div>
