@@ -17,6 +17,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase"; // adjust path if needed
+
+
 export default function Survey() {
   const initialFormData = {
     dmkPromises: "",
@@ -41,360 +45,7 @@ export default function Survey() {
   const [mlaSearch, setMlaSearch] = useState("");
   const [isMlaOpen, setIsMlaOpen] = useState(false);
 
-  const lokSabhaConstituencies = [
-    "Arakkonam",
-    "Arani",
-    "Aruppukkottai",
-    "Chengalpattu",
-    "Chennai Central",
-    "Chennai North",
-    "Chennai South",
-    "Chidambaram",
-    "Coimbatore",
-    "Cuddalore",
-    "Dharmapuri",
-    "Dindigul",
-    "Erode",
-    "Kallakurichi",
-    "Kancheepuram",
-    "Kanniyakumari",
-    "Karur",
-    "Krishnagiri",
-    "Madurai",
-    "Mayiladuthurai",
-    "Nagapattinam",
-    "Namakkal",
-    "Nilgiris",
-    "Perambalur",
-    "Pollachi",
-    "Pudukkottai",
-    "Ramanathapuram",
-    "Salem",
-    "Sivaganga",
-    "Sriperumbudur",
-    "Thanjavur",
-    "Theni",
-    "Thoothukudi",
-    "Tiruchirappalli",
-    "Tirunelveli",
-    "Tiruppur",
-    "Tiruvallur",
-    "Tiruvannamalai",
-    "Vellore",
-  ];
 
-  const lokSabhaToMlaMapping = {
-    Arakkonam: [
-      "Arakkonam",
-      "Sholinghur",
-      "Ranipet",
-      "Arcot",
-      "Cheyyar",
-      "Vandavasi",
-    ],
-    Arani: [
-      "Arani",
-      "Cheyyar",
-      "Vandavasi",
-      "Polur",
-      "Tiruvannamalai",
-      "Kilpennathur",
-    ],
-    Aruppukkottai: [
-      "Aruppukkottai",
-      "Tirumangalam",
-      "Sattur",
-      "Sivakasi",
-      "Virudhunagar",
-      "Rajapalayam",
-    ],
-    Chengalpattu: [
-      "Chengalpattu",
-      "Thiruporur",
-      "Madurantakam",
-      "Uthiramerur",
-      "Kancheepuram",
-      "Alandur",
-    ],
-    "Chennai Central": [
-      "Chennai Central",
-      "Chepauk-Thiruvallikeni",
-      "Thousand Lights",
-      "Anna Nagar",
-      "Villivakkam",
-      "Egmore",
-    ],
-    "Chennai North": [
-      "Chennai North",
-      "Royapuram",
-      "Kolathur",
-      "Thiru-Vi-Ka-Nagar",
-      "Perambur",
-      "Purasawalkam",
-    ],
-    "Chennai South": [
-      "Chennai South",
-      "Velachery",
-      "Sholinganallur",
-      "Tambaram",
-      "Pallavaram",
-      "Saidapet",
-    ],
-    Chidambaram: [
-      "Chidambaram",
-      "Kattumannarkoil",
-      "Vriddachalam",
-      "Neyveli",
-      "Cuddalore",
-      "Kurinjipadi",
-    ],
-    Coimbatore: [
-      "Coimbatore North",
-      "Coimbatore South",
-      "Kavundampalayam",
-      "Singanallur",
-      "Sulur",
-      "Palladam",
-    ],
-    Cuddalore: [
-      "Cuddalore",
-      "Panruti",
-      "Rishivandinam",
-      "Sankarapuram",
-      "Ulundurpet",
-    ],
-    Dharmapuri: [
-      "Dharmapuri",
-      "Palacode",
-      "Pennagaram",
-      "Harur",
-      "Krishnagiri",
-      "Bargur",
-    ],
-    Dindigul: [
-      "Dindigul",
-      "Natham",
-      "Nilakottai",
-      "Sholavandan",
-      "Madurai East",
-      "Melur",
-    ],
-    Erode: [
-      "Erode East",
-      "Erode West",
-      "Modakurichi",
-      "Kodumudi",
-      "Perundurai",
-      "Bhavani",
-    ],
-    Kallakurichi: [
-      "Kallakurichi",
-      "Sankarapuram",
-      "Tirukoilur",
-      "Ulundurpet",
-      "Rishivandinam",
-    ],
-    Kancheepuram: [
-      "Kancheepuram",
-      "Sriperumbudur",
-      "Kundrathur",
-      "St. Thomas Mount",
-      "Pallavaram",
-      "Tambaram",
-    ],
-    Kanniyakumari: [
-      "Kanniyakumari",
-      "Nagercoil",
-      "Colachel",
-      "Padmanabhapuram",
-      "Vilavancode",
-      "Kalkulam",
-    ],
-    Karur: [
-      "Karur",
-      "Krishnarayapuram",
-      "Manapparai",
-      "Kulithalai",
-      "Musiri",
-      "Lalgudi",
-    ],
-    Krishnagiri: [
-      "Krishnagiri",
-      "Hosur",
-      "Uthangarai",
-      "Bargur",
-      "Harur",
-      "Dharmapuri",
-    ],
-    Madurai: [
-      "Madurai Central",
-      "Madurai East",
-      "Madurai North",
-      "Madurai South",
-      "Madurai West",
-      "Thiruparankundram",
-    ],
-    Mayiladuthurai: [
-      "Mayiladuthurai",
-      "Tharangambadi",
-      "Thiruthuraipoondi",
-      "Vedaranyam",
-      "Nagapattinam",
-      "Kilvelur",
-    ],
-    Nagapattinam: [
-      "Nagapattinam",
-      "Kilvelur",
-      "Thirukkuvalai",
-      "Vedaranyam",
-      "Mayiladuthurai",
-      "Sirkazhi",
-    ],
-    Namakkal: [
-      "Namakkal",
-      "Rasipuram",
-      "Senthamangalam",
-      "Komarapalayam",
-      "Tiruchengode",
-      "Sankari",
-    ],
-    Nilgiris: [
-      "Udhagamandalam",
-      "Coonoor",
-      "Kotagiri",
-      "Gudalur",
-      "Mettupalayam",
-      "Avanashi",
-    ],
-    Perambalur: [
-      "Perambalur",
-      "Kunnam",
-      "Alathur",
-      "Veppanthattai",
-      "Ariyalur",
-      "Jayankondam",
-    ],
-    Pollachi: [
-      "Pollachi",
-      "Valparai",
-      "Udumalaipettai",
-      "Kinathukadavu",
-      "Coimbatore South",
-      "Sulur",
-    ],
-    Pudukkottai: [
-      "Pudukkottai",
-      "Thirumayam",
-      "Alangudi",
-      "Aranthangi",
-      "Gandharvakottai",
-      "Viralimalai",
-    ],
-    Ramanathapuram: [
-      "Ramanathapuram",
-      "Mudukulathur",
-      "Paramakudi",
-      "Rameswaram",
-      "Kadaladi",
-      "Mandapam",
-    ],
-    Salem: [
-      "Salem North",
-      "Salem South",
-      "Salem West",
-      "Veerapandi",
-      "Edappadi",
-      "Sankari",
-    ],
-    Sivaganga: [
-      "Sivaganga",
-      "Karaikudi",
-      "Devakottai",
-      "Manamadurai",
-      "Tirupathur",
-      "Ramachandrapuram",
-    ],
-    Sriperumbudur: [
-      "Sriperumbudur",
-      "Kundrathur",
-      "St. Thomas Mount",
-      "Pallavaram",
-      "Tambaram",
-      "Chengalpattu",
-    ],
-    Thanjavur: [
-      "Thanjavur",
-      "Orathanadu",
-      "Thiruvonam",
-      "Budalur",
-      "Kumbakonam",
-      "Papanasam",
-    ],
-    Theni: [
-      "Theni",
-      "Bodinayakanur",
-      "Periyakulam",
-      "Uthamapalayam",
-      "Andipatti",
-      "Cumbum",
-    ],
-    Thoothukudi: [
-      "Thoothukudi",
-      "Vilathikulam",
-      "Ottapidaram",
-      "Kovilpatti",
-      "Sathankulam",
-      "Kadayanallur",
-    ],
-    Tiruchirappalli: [
-      "Srirangam",
-      "Tiruchirappalli East",
-      "Tiruchirappalli West",
-      "Lalgudi",
-      "Manachanallur",
-      "Musiri",
-    ],
-    Tirunelveli: [
-      "Tirunelveli",
-      "Palayamkottai",
-      "Ambasamudram",
-      "Tenkasi",
-      "Shenkottai",
-      "Alangulam",
-    ],
-    Tiruppur: [
-      "Tiruppur North",
-      "Tiruppur South",
-      "Palladam",
-      "Udumalaipettai",
-      "Avanashi",
-      "Dharapuram",
-    ],
-    Tiruvallur: [
-      "Tiruvallur",
-      "Ponneri",
-      "Gummidipoondi",
-      "Poonamallee",
-      "Avadi",
-      "Maduravoyal",
-    ],
-    Tiruvannamalai: [
-      "Tiruvannamalai",
-      "Kilpennathur",
-      "Kalasapakkam",
-      "Polur",
-      "Arani",
-      "Cheyyar",
-    ],
-    Vellore: [
-      "Vellore",
-      "Anaicut",
-      "Gudiyatham",
-      "Vaniyambadi",
-      "Ambur",
-      "Jolarpet",
-    ],
-  };
 
   const allAssemblyConstituencies = [
     'Alangulam', 'Alandur', 'Alanganallur', 'Alathur', 'Ambur', 'Anavatti', 'Andipatti', 'Anna Nagar',
@@ -553,43 +204,86 @@ export default function Survey() {
     localStorage.setItem("surveySubmitted", "true");
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // Validate required fields
+  //   const requiredFields = questions.filter((q) => q.required).map((q) => q.id);
+  //   const missingFields = requiredFields.filter((field) => !formData[field]);
+
+  //   if (missingFields.length > 0) {
+  //     setToastMessage("Please fill in all required fields!");
+  //     setShowToast(true);
+  //     setTimeout(() => setShowToast(false), 3000);
+  //     return;
+  //   }
+
+  //   const currentTime = new Date().toLocaleString("en-US", {
+  //     year: "numeric",
+  //     month: "2-digit",
+  //     day: "2-digit",
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //     second: "2-digit",
+  //     hour12: true,
+  //   });
+
+  //   let location;
+  //   try {
+  //     location = await getCurrentLocation();
+  //   } catch (error) {
+  //     location = "Location access denied or unavailable";
+  //   }
+
+  //   const submissionData = { ...formData, submittedAt: currentTime, location };
+
+  //   saveToLocalStorage(submissionData);
+  //   console.log("Survey Submission:", submissionData);
+  //   setIsSubmitted(true);
+  // };
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Validate required fields
-    const requiredFields = questions.filter((q) => q.required).map((q) => q.id);
-    const missingFields = requiredFields.filter((field) => !formData[field]);
+  // Validate required fields
+  const requiredFields = questions.filter((q) => q.required).map((q) => q.id);
+  const missingFields = requiredFields.filter((field) => !formData[field]);
 
-    if (missingFields.length > 0) {
-      setToastMessage("Please fill in all required fields!");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-      return;
-    }
+  if (missingFields.length > 0) {
+    setToastMessage("Please fill in all required fields!");
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+    return;
+  }
 
-    const currentTime = new Date().toLocaleString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
+  let location;
+  try {
+    location = await getCurrentLocation();
+  } catch (error) {
+    location = "Location access denied or unavailable";
+  }
 
-    let location;
-    try {
-      location = await getCurrentLocation();
-    } catch (error) {
-      location = "Location access denied or unavailable";
-    }
-
-    const submissionData = { ...formData, submittedAt: currentTime, location };
-
-    saveToLocalStorage(submissionData);
-    console.log("Survey Submission:", submissionData);
-    setIsSubmitted(true);
+  const submissionData = {
+    submittedAt: serverTimestamp(), // Firestore timestamp
+    location,
+//    deviceId: "WEB_" + Math.random().toString(36).substr(2, 9), // example device ID
+    answers: { ...formData }
   };
+
+  try {
+    // Send to Firestore
+    await addDoc(collection(db, "responses"), submissionData);
+    console.log("Survey submitted:", submissionData);
+
+    setIsSubmitted(true);
+  } catch (err) {
+    console.error("Error submitting survey:", err);
+    setToastMessage("Failed to submit survey. Please try again.");
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  }
+};
 
   const renderQuestion = (question, index) => {
     const { id, label, type, required, options, optionLabels, placeholder } =
