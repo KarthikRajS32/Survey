@@ -30,12 +30,6 @@ export default function Survey() {
     age: "",
     sex: "",
     voteCommitment: "",
-    satisfaction: "",
-    frequency: "",
-    recommendation: "",
-    improvement: "",
-    contact: "",
-    feedback: "",
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -244,46 +238,54 @@ export default function Survey() {
 
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // Validate required fields
-  const requiredFields = questions.filter((q) => q.required).map((q) => q.id);
-  const missingFields = requiredFields.filter((field) => !formData[field]);
+    // Check if already submitted
+    if (localStorage.getItem("surveySubmitted") === "true") {
+      setToastMessage("Survey already submitted!");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
 
-  if (missingFields.length > 0) {
-    setToastMessage("Please fill in all required fields!");
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-    return;
-  }
+    // Validate required fields
+    const requiredFields = questions.filter((q) => q.required).map((q) => q.id);
+    const missingFields = requiredFields.filter((field) => !formData[field]);
 
-  let location;
-  try {
-    location = await getCurrentLocation();
-  } catch (error) {
-    location = "Location access denied or unavailable";
-  }
+    if (missingFields.length > 0) {
+      setToastMessage("Please fill in all required fields!");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
 
-  const submissionData = {
-    submittedAt: serverTimestamp(), // Firestore timestamp
-    location,
-//    deviceId: "WEB_" + Math.random().toString(36).substr(2, 9), // example device ID
-    answers: { ...formData }
+    let location;
+    try {
+      location = await getCurrentLocation();
+    } catch (error) {
+      location = "Location access denied or unavailable";
+    }
+
+    const submissionData = {
+      submittedAt: serverTimestamp(),
+      location,
+      answers: { ...formData }
+    };
+
+    try {
+      await addDoc(collection(db, "responses"), submissionData);
+      console.log("Survey submitted:", submissionData);
+      
+      // Mark as submitted in localStorage
+      localStorage.setItem("surveySubmitted", "true");
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Error submitting survey:", err);
+      setToastMessage("Failed to submit survey. Please try again.");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
-
-  try {
-    // Send to Firestore
-    await addDoc(collection(db, "responses"), submissionData);
-    console.log("Survey submitted:", submissionData);
-
-    setIsSubmitted(true);
-  } catch (err) {
-    console.error("Error submitting survey:", err);
-    setToastMessage("Failed to submit survey. Please try again.");
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  }
-};
 
   const renderQuestion = (question, index) => {
     const { id, label, type, required, options, optionLabels, placeholder } =
@@ -291,24 +293,24 @@ export default function Survey() {
     const questionNumber = index + 1;
     const labelText = `${questionNumber}. ${label}${required ? " *" : ""}`;
 
-    if (type === "input" || type === "tel") {
-      return (
-        <div key={id} className="space-y-2">
-          <Label htmlFor={id} className="text-sm sm:text-base font-medium">
-            {labelText}
-          </Label>
-          <Input
-            id={id}
-            type={type === "tel" ? "tel" : "text"}
-            value={formData[id]}
-            onChange={(e) => handleInputChange(id, e.target.value)}
-            placeholder={placeholder}
-            required={required}
-            className="w-full h-10 text-sm sm:text-base"
-          />
-        </div>
-      );
-    }
+    // if (type === "input" || type === "tel") {
+    //   return (
+    //     <div key={id} className="space-y-2">
+    //       <Label htmlFor={id} className="text-sm sm:text-base font-medium">
+    //         {labelText}
+    //       </Label>
+    //       <Input
+    //         id={id}
+    //         type={type === "tel" ? "tel" : "text"}
+    //         value={formData[id]}
+    //         onChange={(e) => handleInputChange(id, e.target.value)}
+    //         placeholder={placeholder}
+    //         required={required}
+    //         className="w-full h-10 text-sm sm:text-base"
+    //       />
+    //     </div>
+    //   );
+    // }
 
     if (type === "radio") {
       return (
