@@ -198,44 +198,6 @@ export default function Survey() {
     localStorage.setItem("surveySubmitted", "true");
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   // Validate required fields
-  //   const requiredFields = questions.filter((q) => q.required).map((q) => q.id);
-  //   const missingFields = requiredFields.filter((field) => !formData[field]);
-
-  //   if (missingFields.length > 0) {
-  //     setToastMessage("Please fill in all required fields!");
-  //     setShowToast(true);
-  //     setTimeout(() => setShowToast(false), 3000);
-  //     return;
-  //   }
-
-  //   const currentTime = new Date().toLocaleString("en-US", {
-  //     year: "numeric",
-  //     month: "2-digit",
-  //     day: "2-digit",
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //     second: "2-digit",
-  //     hour12: true,
-  //   });
-
-  //   let location;
-  //   try {
-  //     location = await getCurrentLocation();
-  //   } catch (error) {
-  //     location = "Location access denied or unavailable";
-  //   }
-
-  //   const submissionData = { ...formData, submittedAt: currentTime, location };
-
-  //   saveToLocalStorage(submissionData);
-  //   console.log("Survey Submission:", submissionData);
-  //   setIsSubmitted(true);
-  // };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -293,24 +255,6 @@ export default function Survey() {
     const questionNumber = index + 1;
     const labelText = `${questionNumber}. ${label}${required ? " *" : ""}`;
 
-    // if (type === "input" || type === "tel") {
-    //   return (
-    //     <div key={id} className="space-y-2">
-    //       <Label htmlFor={id} className="text-sm sm:text-base font-medium">
-    //         {labelText}
-    //       </Label>
-    //       <Input
-    //         id={id}
-    //         type={type === "tel" ? "tel" : "text"}
-    //         value={formData[id]}
-    //         onChange={(e) => handleInputChange(id, e.target.value)}
-    //         placeholder={placeholder}
-    //         required={required}
-    //         className="w-full h-10 text-sm sm:text-base"
-    //       />
-    //     </div>
-    //   );
-    // }
 
     if (type === "radio") {
       return (
