@@ -228,10 +228,17 @@ export default function Survey() {
       location = "Location access denied or unavailable";
     }
 
+    // Transform answers to Q1, Q2, Q3... format
+    const transformedAnswers = {};
+    questions.forEach((question, index) => {
+      const questionKey = `Q${index + 1}`;
+      transformedAnswers[questionKey] = formData[question.id] || "";
+    });
+
     const submissionData = {
       submittedAt: serverTimestamp(),
       location,
-      answers: { ...formData }
+      ...transformedAnswers
     };
 
     try {
